@@ -5,21 +5,23 @@ var numRight = 0;
 var phrase = [];
 var guessedLtrs = [];
 var wins = 0;
-// var ltr = /^[a-zA-z]+$/;
+
 //return a random index number for wordIndex
 var guess = wordIndex[Math.floor(Math.random() * wordIndex.length)]; //selects guessed word of the index
 // console.log(index);
- console.log(guess);
+//  console.log(guess);
 // console.log(guess.length);
 var exactLength = guess.length;
-//will add 
-for (var j = 0; j < guess.length; j++){
-    if(guess.charAt(j) === " "){
-        exactLength --;
-        phrase[j] = " ";
-    }
-    else{
-        phrase[j] = " _ ";
+//will add up exact number of letters needed to solve mystery word 
+function exactLth(){
+    for (var j = 0; j < guess.length; j++){
+        if(guess.charAt(j) === " "){
+            exactLength --;
+            phrase[j] = " ";
+        }
+        else{
+            phrase[j] = " _ ";
+        }
     }
 }
 
@@ -30,33 +32,46 @@ function gameStart(ltr){
             numRight ++;
             document.querySelector("#result").innerHTML = phrase.join(" ");
         }
-        if (numRight === exactLength){
-            printout();
-            return;
-        }
     }
     guessedLtrs.push(ltr);
 }
 
 function printout(){
+    document.querySelector("#result").innerHTML = phrase.join(" ");
     document.querySelector("#wins").innerHTML = "Number of wins: " + wins;
-    document.querySelector("#guess").innerHTML = "Guessed Letters: " + guessedLtrs.join(" ");
+    document.querySelector("#guess").innerHTML = "Guessed Letters: " + guessedLtrs;
     document.querySelector("#remaining").innerHTML = "Number of guesses remaining: " + countdown;
+}
+
+function gameRestart(){
+    guess = wordIndex[Math.floor(Math.random() * wordIndex.length)];
+    // console.log(guess);
+    numRight = 0;
+    countdown = 15;
+    guessedLtrs.length = 0;
+    exactLength = guess.length;
+    phrase.length = 0;
+    exactLth();
+    gameStart(event);
 }
 //activates when user presses a key
 document.onkeyup = function(event){
-    // console.log(numRight);
-    // console.log(exactLength);
     if(numRight === exactLength){
         document.querySelector("#update").innerHTML = "Congratulations You Have Solved The Puzzle";
         wins ++;
         printout();
-        return;
+        gameRestart();
+    }
+    else if (countdown === 15){
+        exactLth();
+        printout();
     }
     else if(countdown === 0){
         document.querySelector("#update").innerHTML = "Better Luck Next Time Kiddo...";
-        return;
+        printout();
+        gameRestart();
     }
+
     var letter = event.key.toLowerCase();
     gameStart(letter);
     countdown --;
